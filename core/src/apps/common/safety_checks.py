@@ -1,56 +1,42 @@
+import storage.cache
 import storage.device
+from storage.cache import APP_COMMON_SAFETY_CHECKS_TEMPORARY
 from trezor.messages import SafetyCheckLevel
 
 if False:
-    from typing import Optional, Tuple
+    from typing import Optional
     from trezor.messages.ApplySettings import EnumTypeSafetyCheckLevel
-
-_temporary_safety_checks = None  # type: Optional[EnumTypeSafetyCheckLevel]
 
 
 def get() -> EnumTypeSafetyCheckLevel:
     """
     Returns the effective safety check level.
     """
-    if _temporary_safety_checks is None:
+    temporary_safety_check_level = storage.cache.get(
+        APP_COMMON_SAFETY_CHECKS_TEMPORARY
+    )  # type: Optional[EnumTypeSafetyCheckLevel]
+    if temporary_safety_check_level is None:
         return storage.device.safety_check_level()
     else:
-        return _temporary_safety_checks
+        return temporary_safety_check_level
 
 
-def get_settings() -> Tuple[
-    EnumTypeSafetyCheckLevel, Optional[EnumTypeSafetyCheckLevel]
-]:
+def set(level: EnumTypeSafetyCheckLevel) -> None:
     """
-    Returns both settings.
+    Changes the safety level settings.
     """
-    return storage.device.safety_check_level(), _temporary_safety_checks
-
-
-def set(
-    persistent: Optional[EnumTypeSafetyCheckLevel],
-    temporary: Optional[EnumTypeSafetyCheckLevel],
-) -> None:
-    """
-    Changes the safety level settings. If the persistent value is None it is left as is.
-    If the temporary value is None it is cleared (i.e. persistent value becomes effective afterwards).
-    """
-    global _temporary_safety_checks
-
-    if persistent is None:
-        persistent = storage.device.safety_check_level()
-
-    if temporary is not None and persistent == temporary:
-        raise ValueError(
-            "Cannot set safety_checks and temporary_safety_checks to the same level"
-        )
-
-    _temporary_safety_checks = temporary
-    storage.device.set_safety_check_level(persistent)
+    if level in (SafetyCheckLevel.Strict, SafetyCheckLevel.PromptAlways):
+        storage.cache.delete(APP_COMMON_SAFETY_CHECKS_TEMPORARY)
+        storage.device.set_safety_check_level(level)
+    elif level == SafetyCheckLevel.PromptTemporarily:
+        storage.device.set_safety_check_level(SafetyCheckLevel.Strict)
+        storage.cache.set(APP_COMMON_SAFETY_CHECKS_TEMPORARY, level)
+    else:
+        raise ValueError("Unknown SafetyCheckLevel")
 
 
 def is_prompt() -> bool:
     """
-    Shorthand for checking whether the effective level is Prompt.
+    Shorthand for checking whether the effective level is PromptAlways or PromptTemporarily.
     """
-    return get() == SafetyCheckLevel.Prompt
+    return get() in (SafetyCheckLevel.PromptAlways, SafetyCheckLevel.PromptTemporarily)

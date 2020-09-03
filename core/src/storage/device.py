@@ -290,13 +290,15 @@ def safety_check_level() -> EnumTypeSafetyCheckLevel:
     level = common.get_uint8(_NAMESPACE, _SAFETY_CHECK_LEVEL)
     if level is None:
         level = _DEFAULT_SAFETY_CHECK_LEVEL
-    if level not in (SafetyCheckLevel.Strict, SafetyCheckLevel.Prompt):
+    # SafetyCheckLevel.PromptTemporarily must not be written to storage
+    if level not in (SafetyCheckLevel.Strict, SafetyCheckLevel.PromptAlways):
         raise RuntimeError
     return level  # type: ignore
 
 
 # do not use this function directly, see apps.common.safety_checks instead
 def set_safety_check_level(level: EnumTypeSafetyCheckLevel) -> None:
-    if level not in (SafetyCheckLevel.Strict, SafetyCheckLevel.Prompt):
+    # SafetyCheckLevel.PromptTemporarily must not be written to storage
+    if level not in (SafetyCheckLevel.Strict, SafetyCheckLevel.PromptAlways):
         raise ValueError
     common.set_uint8(_NAMESPACE, _SAFETY_CHECK_LEVEL, level)

@@ -92,7 +92,7 @@ def get_features() -> Features:
         f.sd_protection = storage.sd_salt.is_enabled()
         f.wipe_code_protection = config.has_wipe_code()
         f.passphrase_always_on_device = storage.device.get_passphrase_always_on_device()
-        f.safety_checks, f.temporary_safety_checks = safety_checks.get_settings()
+        f.safety_checks = safety_checks.get()
 
     return f
 
