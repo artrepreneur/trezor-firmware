@@ -24,6 +24,7 @@ class ApplySettings(p.MessageType):
         display_rotation: int = None,
         passphrase_always_on_device: bool = None,
         safety_checks: EnumTypeSafetyCheckLevel = None,
+        temporary_safety_checks: EnumTypeSafetyCheckLevel = None,
     ) -> None:
         self.language = language
         self.label = label
@@ -33,6 +34,7 @@ class ApplySettings(p.MessageType):
         self.display_rotation = display_rotation
         self.passphrase_always_on_device = passphrase_always_on_device
         self.safety_checks = safety_checks
+        self.temporary_safety_checks = temporary_safety_checks
 
     @classmethod
     def get_fields(cls) -> Dict:
@@ -45,4 +47,5 @@ class ApplySettings(p.MessageType):
             7: ('display_rotation', p.UVarintType, 0),
             8: ('passphrase_always_on_device', p.BoolType, 0),
             9: ('safety_checks', p.EnumType("SafetyCheckLevel", (0, 1)), 0),
+            10: ('temporary_safety_checks', p.EnumType("SafetyCheckLevel", (0, 1)), 0),
         }

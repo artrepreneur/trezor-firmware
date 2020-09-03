@@ -53,6 +53,7 @@ class Features(p.MessageType):
         session_id: bytes = None,
         passphrase_always_on_device: bool = None,
         safety_checks: EnumTypeSafetyCheckLevel = None,
+        temporary_safety_checks: EnumTypeSafetyCheckLevel = None,
     ) -> None:
         self.vendor = vendor
         self.major_version = major_version
@@ -89,6 +90,7 @@ class Features(p.MessageType):
         self.session_id = session_id
         self.passphrase_always_on_device = passphrase_always_on_device
         self.safety_checks = safety_checks
+        self.temporary_safety_checks = temporary_safety_checks
 
     @classmethod
     def get_fields(cls) -> Dict:
@@ -128,4 +130,5 @@ class Features(p.MessageType):
             35: ('session_id', p.BytesType, 0),
             36: ('passphrase_always_on_device', p.BoolType, 0),
             37: ('safety_checks', p.EnumType("SafetyCheckLevel", (0, 1)), 0),
+            38: ('temporary_safety_checks', p.EnumType("SafetyCheckLevel", (0, 1)), 0),
         }
