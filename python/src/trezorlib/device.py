@@ -36,6 +36,7 @@ def apply_settings(
     auto_lock_delay_ms=None,
     display_rotation=None,
     safety_checks=None,
+    temporary_safety_checks=None,
 ):
     settings = messages.ApplySettings(
         label=label,
@@ -46,6 +47,7 @@ def apply_settings(
         auto_lock_delay_ms=auto_lock_delay_ms,
         display_rotation=display_rotation,
         safety_checks=safety_checks,
+        temporary_safety_checks=temporary_safety_checks,
     )
 
     out = client.call(settings)

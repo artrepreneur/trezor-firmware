@@ -190,9 +190,12 @@ def homescreen(client, filename):
 
 
 @cli.command()
+@click.option(
+    "-t", "--temporary", is_flag=True, help="Revert setting after unplugging Trezor."
+)
 @click.argument("level", type=ChoiceType(SAFETY_LEVELS))
 @with_client
-def safety_checks(client, level):
+def safety_checks(client, temporary, level):
     """Set safety check level.
 
     Set to "strict" to get the full Trezor security.
@@ -202,7 +205,10 @@ def safety_checks(client, level):
 
     This is a power-user feature. Use with caution.
     """
-    return device.apply_settings(client, safety_checks=level)
+    if temporary:
+        return device.apply_settings(client, temporary_safety_checks=level)
+    else:
+        return device.apply_settings(client, safety_checks=level)
 
 
 #
