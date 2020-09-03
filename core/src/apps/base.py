@@ -9,7 +9,7 @@ from trezor.messages.Features import Features
 from trezor.messages.PreauthorizedRequest import PreauthorizedRequest
 from trezor.messages.Success import Success
 
-from apps.common import mnemonic
+from apps.common import mnemonic, safety_checks
 from apps.common.request_pin import verify_user_pin
 
 if False:
@@ -92,7 +92,7 @@ def get_features() -> Features:
         f.sd_protection = storage.sd_salt.is_enabled()
         f.wipe_code_protection = config.has_wipe_code()
         f.passphrase_always_on_device = storage.device.get_passphrase_always_on_device()
-        f.safety_checks = storage.device.safety_check_level()
+        f.safety_checks, f.temporary_safety_checks = safety_checks.get_settings()
 
     return f
 

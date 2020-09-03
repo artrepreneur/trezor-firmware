@@ -6,9 +6,11 @@ from trezor.strings import format_duration_ms
 from trezor.ui.text import Text
 
 from apps.base import lock_device
+from apps.common import safety_checks
 from apps.common.confirm import require_confirm, require_hold_to_confirm
 
 if False:
+    from typing import Optional
     from trezor.messages.ApplySettings import ApplySettings, EnumTypeSafetyCheckLevel
 
 
@@ -44,6 +46,7 @@ async def apply_settings(ctx: wire.Context, msg: ApplySettings):
         and msg.display_rotation is None
         and msg.auto_lock_delay_ms is None
         and msg.safety_checks is None
+        and msg.temporary_safety_checks is None
     ):
         raise wire.ProcessError("No setting provided")
 
@@ -81,9 +84,11 @@ async def apply_settings(ctx: wire.Context, msg: ApplySettings):
         # use the value that was stored, not the one that was supplied by the user
         workflow.idle_timer.set(storage.device.get_autolock_delay_ms(), lock_device)
 
-    if msg.safety_checks is not None:
-        await require_confirm_safety_checks(ctx, msg.safety_checks)
-        storage.device.set_safety_check_level(msg.safety_checks)
+    if msg.safety_checks is not None or msg.temporary_safety_checks is not None:
+        await require_confirm_safety_checks(
+            ctx, msg.safety_checks, msg.temporary_safety_checks
+        )
+        safety_checks.set(msg.safety_checks, msg.temporary_safety_checks)
 
     if msg.display_rotation is not None:
         await require_confirm_change_display_rotation(ctx, msg.display_rotation)
@@ -152,18 +157,43 @@ async def require_confirm_change_autolock_delay(ctx, delay_ms):
     await require_confirm(ctx, text, ButtonRequestType.ProtectCall)
 
 
-async def require_confirm_safety_checks(ctx, level: EnumTypeSafetyCheckLevel) -> None:
-    if level == SafetyCheckLevel.Prompt:
-        text = Text("Unsafe prompts", ui.ICON_WIPE)
-        text.normal(
-            "Trezor will allow you to", "confirm actions which", "might be dangerous."
-        )
-        text.br_half()
-        text.bold("Allow unsafe prompts?")
-        await require_hold_to_confirm(ctx, text, ButtonRequestType.ProtectCall)
-    elif level == SafetyCheckLevel.Strict:
-        text = Text("Unsafe prompts", ui.ICON_CONFIG)
-        text.normal("Do you really want to", "disable unsafe prompts?")
-        await require_confirm(ctx, text, ButtonRequestType.ProtectCall)
-    else:
-        raise ValueError  # enum value out of range
+async def require_confirm_safety_checks(
+    ctx,
+    level: Optional[EnumTypeSafetyCheckLevel],
+    temporary_level: Optional[EnumTypeSafetyCheckLevel],
+) -> None:
+    if level is not None:
+        if level == SafetyCheckLevel.Prompt:
+            text = Text("Safety checks", ui.ICON_WIPE)
+            text.normal(
+                "Trezor will allow you to",
+                "approve some actions",
+                "which might be unsafe.",
+            )
+            text.br_half()
+            text.bold("Are you sure?")
+            await require_hold_to_confirm(ctx, text, ButtonRequestType.ProtectCall)
+        elif level == SafetyCheckLevel.Strict:
+            text = Text("Safety checks", ui.ICON_CONFIG)
+            text.normal("Do you really want to", "enable safety checks?")
+            await require_confirm(ctx, text, ButtonRequestType.ProtectCall)
+        else:
+            raise ValueError  # enum value out of range
+
+    if temporary_level is not None:
+        if temporary_level == SafetyCheckLevel.Prompt:
+            text = Text("Safety checks", ui.ICON_WIPE)
+            text.normal(
+                "Trezor will temporarily",
+                "allow you to approve",
+                "some actions which",
+                "might be unsafe.",
+            )
+            text.bold("Are you sure?")
+            await require_hold_to_confirm(ctx, text, ButtonRequestType.ProtectCall)
+        elif temporary_level == SafetyCheckLevel.Strict:
+            text = Text("Safety checks", ui.ICON_CONFIG)
+            text.normal("Do you really want to", "temporarily enable", "safety checks?")
+            await require_confirm(ctx, text, ButtonRequestType.ProtectCall)
+        else:
+            raise ValueError  # enum value out of range
