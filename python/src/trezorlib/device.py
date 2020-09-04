@@ -47,7 +47,6 @@ def apply_settings(
         auto_lock_delay_ms=auto_lock_delay_ms,
         display_rotation=display_rotation,
         safety_checks=safety_checks,
-        temporary_safety_checks=temporary_safety_checks,
     )
 
     out = client.call(settings)

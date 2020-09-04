@@ -28,7 +28,8 @@ except ImportError:
 ROTATION = {"north": 0, "east": 90, "south": 180, "west": 270}
 SAFETY_LEVELS = {
     "strict": messages.SafetyCheckLevel.Strict,
-    "prompt": messages.SafetyCheckLevel.Prompt,
+    "prompt-always": messages.SafetyCheckLevel.PromptAlways,
+    "prompt-temporarily": messages.SafetyCheckLevel.PromptTemporarily,
 }
 
 
@@ -190,25 +191,22 @@ def homescreen(client, filename):
 
 
 @cli.command()
-@click.option(
-    "-t", "--temporary", is_flag=True, help="Revert setting after unplugging Trezor."
-)
 @click.argument("level", type=ChoiceType(SAFETY_LEVELS))
 @with_client
-def safety_checks(client, temporary, level):
+def safety_checks(client, level):
     """Set safety check level.
 
     Set to "strict" to get the full Trezor security.
 
-    Set to "prompt" if you want to be able to allow potentially unsafe actions, such as
-    mismatching coin keys or extreme fees.
+    Set to "prompt-always" if you want to be able to allow potentially unsafe actions,
+    such as mismatching coin keys or extreme fees.
+
+    Set to "prompt-temporarily" to allow potentially unsafe actions until Trezor is
+    unplugged.
 
     This is a power-user feature. Use with caution.
     """
-    if temporary:
-        return device.apply_settings(client, temporary_safety_checks=level)
-    else:
-        return device.apply_settings(client, safety_checks=level)
+    return device.apply_settings(client, safety_checks=level)
 
 
 #
