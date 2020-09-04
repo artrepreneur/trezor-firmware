@@ -4,7 +4,7 @@ from mock_storage import mock_storage
 
 from storage import cache
 import storage.device
-from apps.common import HARDENED
+from apps.common import HARDENED, safety_checks
 from apps.common.paths import path_is_hardened
 from apps.common.keychain import LRUCache, Keychain, with_slip44_keychain, get_keychain
 from trezor import wire
@@ -39,7 +39,7 @@ class TestKeychain(unittest.TestCase):
                 keychain.verify_path(f)
 
         # turn off restrictions
-        storage.device.set_safety_check_level(SafetyCheckLevel.Prompt)
+        safety_checks.set(SafetyCheckLevel.Prompt)
         for path in correct + fails:
             keychain.verify_path(path)
 
