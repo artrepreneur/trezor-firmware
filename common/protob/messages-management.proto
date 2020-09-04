@@ -20,7 +20,7 @@ enum BackupType {
 enum SafetyCheckLevel {
     Strict = 0;             // disallow unsafe actions
     PromptAlways = 1;       // ask user before unsafe action
-    PromptTemporarily = 2;  // like Prompt but reverts to Strict after reboot
+    PromptTemporarily = 2;  // like PromptAlways but reverts to Strict after reboot
 }
 
 /**
