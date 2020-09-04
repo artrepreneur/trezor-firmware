@@ -151,19 +151,6 @@ def import_statement_from_path(path):
         return "import {}".format(import_name)
 
 
-def uniq_by(elements, key_func):
-    seen = set()
-    result = []
-
-    for elem in elements:
-        key = key_func(elem)
-        if key not in seen:
-            seen.add(key)
-            result.append(elem)
-
-    return result
-
-
 class Descriptor:
     def __init__(self, data, message_type="MessageType", import_path="protobuf"):
         self.descriptor = descriptor_pb2.FileDescriptorSet()
@@ -298,7 +285,6 @@ class Descriptor:
         yield "        from typing_extensions import Literal  # noqa: F401"
 
         all_enums = [field for field in fields if field.type_name in self.enum_types]
-        all_enums = uniq_by(all_enums, lambda field: field.py_inner_type)
         for field in all_enums:
             allowed_values = self.enum_types[field.type_name].values()
             valuestr = ", ".join(str(v) for v in sorted(allowed_values))
