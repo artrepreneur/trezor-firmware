@@ -18,8 +18,9 @@ enum BackupType {
  * Level of safety checks for unsafe actions like spending from invalid path namespace or setting high transaction fee.
  */
 enum SafetyCheckLevel {
-    Strict = 0;    // disallow unsafe actions
-    Prompt = 1;    // ask user before unsafe action
+    Strict = 0;             // disallow unsafe actions
+    PromptAlways = 1;       // ask user before unsafe action
+    PromptTemporarily = 2;  // like Prompt but reverts to Strict after reboot
 }
 
 /**
@@ -99,7 +100,6 @@ message Features {
     optional bytes session_id = 35;
     optional bool passphrase_always_on_device = 36;  // device enforces passphrase entry on Trezor
     optional SafetyCheckLevel safety_checks = 37;            // safety check level, set to Prompt to limit path namespace enforcement
-    optional SafetyCheckLevel temporary_safety_checks = 38;  // same as above but takes precedence and does not persist across reboot
 }
 
 /**
@@ -136,7 +136,6 @@ message ApplySettings {
     optional uint32 display_rotation = 7;  // in degrees from North
     optional bool passphrase_always_on_device = 8;  // do not prompt for passphrase, enforce device entry
     optional SafetyCheckLevel safety_checks = 9;  // Safety check level, set to Prompt to limit path namespace enforcement
-    optional SafetyCheckLevel temporary_safety_checks = 10;  // same as above but takes precedence and does not persist across reboot
 }
 
 /**
