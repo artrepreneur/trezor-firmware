@@ -39,7 +39,7 @@ class TestKeychain(unittest.TestCase):
                 keychain.verify_path(f)
 
         # turn off restrictions
-        safety_checks.set(SafetyCheckLevel.Prompt)
+        safety_checks.set(SafetyCheckLevel.PromptTemporarily)
         for path in correct + fails:
             keychain.verify_path(path)
 
