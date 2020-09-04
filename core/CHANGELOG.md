@@ -7,8 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## 2.3.4 [to be released on 6th October 2020]
 
 ### Added
+- Value of the `safety-checks` setting to the `Features` message.  [#1193]
 
 ### Changed
+- The `safety-checks` setting gained new possible value `PromptTemporarily` which overrides safety checks until device reboot.  [#1133]
 
 ### Deprecated
 
@@ -282,8 +284,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 [#1115]: https://github.com/trezor/trezor-firmware/issues/1115
 [#1118]: https://github.com/trezor/trezor-firmware/issues/1118
 [#1126]: https://github.com/trezor/trezor-firmware/issues/1126
+[#1133]: https://github.com/trezor/trezor-firmware/issues/1133
 [#1139]: https://github.com/trezor/trezor-firmware/issues/1139
 [#1159]: https://github.com/trezor/trezor-firmware/issues/1159
 [#1165]: https://github.com/trezor/trezor-firmware/pull/1165
 [#1173]: https://github.com/trezor/trezor-firmware/pull/1173
 [#1188]: https://github.com/trezor/trezor-firmware/issues/1188
+[#1193]: https://github.com/trezor/trezor-firmware/issues/1193
