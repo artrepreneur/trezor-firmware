@@ -42,6 +42,8 @@ class TestKeychain(unittest.TestCase):
         safety_checks.set(SafetyCheckLevel.PromptTemporarily)
         for path in correct + fails:
             keychain.verify_path(path)
+        # turn on restrictions
+        safety_checks.set(SafetyCheckLevel.Strict)
 
     def test_verify_path_special_ed25519(self):
         n = [[44 | HARDENED, 134 | HARDENED]]
