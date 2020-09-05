@@ -28,7 +28,7 @@
     "Normal": 10
   },
   "dust_limit": 2940,
-  "blocktime_seconds": 600,
+  "blocktime_seconds": 60,
   "uri_prefix": "PKT",
   "min_address_length": 27,
   "max_address_length": 34,
